@@ -14,7 +14,7 @@ navigate(x=0, y=0, z=1, frame_id='body', auto_arm=True)
 
 # Wait for 5 seconds
 rospy.sleep(5)
-
+#
 while True:
     try:
         print('Please, enter X and Y coordinates: X,Y')
