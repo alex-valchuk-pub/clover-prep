@@ -21,6 +21,8 @@ navigate = rospy.ServiceProxy('navigate', srv.Navigate)
 land = rospy.ServiceProxy('land', Trigger)
 image_pub = rospy.Publisher('~fire_debug', Image, queue_size=1)
 
+# APPLES    GREEN   CORRECT
+
 
 telem = get_telemetry()
 print('Battery: {}'.format(telem.voltage))
