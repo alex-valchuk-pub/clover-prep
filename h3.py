@@ -44,7 +44,7 @@ def image_callback(msg):
         xc = x + w/2
         yc = y + h/2
 
-        cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 3)
+        cv2.circle(img, (x, y), int(w / 2), (0, 255, 0), 3)
         image_pub.publish(bridge.cv2_to_imgmsg(img, 'bgr8'))
         print('Found {} with data {} with center at x={}, y={}'.format(b_type, b_data, xc, yc))
 

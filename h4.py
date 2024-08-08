@@ -84,6 +84,7 @@ def image_callback(msg):
 #   - fire_debug: http://127.0.0.1/clover/topics.html
 #   - home/clover/examples/red_circle.py
 #   - http://127.0.0.1/clover/docs/ru/innopolis_open_L22_AERO.html
+#   - S
 
 image_sub = rospy.Subscriber('main_camera/image_raw_throttled', Image, image_callback, queue_size=1)
 
