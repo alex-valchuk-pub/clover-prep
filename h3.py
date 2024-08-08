@@ -52,7 +52,7 @@ image_sub = rospy.Subscriber('main_camera/image_raw_throttled', Image, image_cal
 
 
 print('Take off and hover 1 m above the ground')
-navigate(x=0, y=0, z=10, frame_id='body', auto_arm=True)
+navigate(x=0, y=0, z=1, frame_id='body', auto_arm=True)
 
 # Wait for 5 seconds
 rospy.sleep(5)
