@@ -19,8 +19,8 @@ bridge = CvBridge()
 get_telemetry = rospy.ServiceProxy('get_telemetry', srv.GetTelemetry)
 navigate = rospy.ServiceProxy('navigate', srv.Navigate)
 land = rospy.ServiceProxy('land', Trigger)
-
 image_pub = rospy.Publisher('~fire_debug', Image, queue_size=1)
+
 
 telem = get_telemetry()
 print('Battery: {}'.format(telem.voltage))
@@ -36,17 +36,54 @@ rospy.Subscriber('rangefinder/range', Range, range_callback)
 @long_callback
 def image_callback(msg):
     img = bridge.imgmsg_to_cv2(msg, 'bgr8')
-    barcodes = pyzbar.decode(img, [ZBarSymbol.QRCODE])
-    for barcode in barcodes:
-        b_data = barcode.data.decode('utf-8')
-        b_type = barcode.type
-        (x, y, w, h) = barcode.rect
-        xc = x + w/2
-        yc = y + h/2
+    img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV) [20:200,20:300]
 
-        cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 3)
-        image_pub.publish(bridge.cv2_to_imgmsg(img, 'bgr8'))
-        print('Found {} with data {} with center at x={}, y={}'.format(b_type, b_data, xc, yc))
+    red_low1 = (0, 110, 150)
+    red_high1 = (7, 255, 255)
+    
+    yellow_orange_low = (38, 110, 150)
+    yellow_orange_high= (52, 110, 150)
+
+    #гречиха
+    brown_low = (23, 50, 50)
+    brown_high= (37, 50, 50)
+
+    red_mask = cv2.inRange(img_hsv, red_low1, red_high1)
+    yellow_orange_mask = cv2.inRange(img_hsv, yellow_orange_low, yellow_orange_high)
+    brown_mask = cv2.inRange(img_hsv, brown_low, brown_high)
+
+    red_contours, red_hierarchy = cv2.findContours(red_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+    image_pub.publish(bridge.cv2_to_imgmsg(img, 'bgr8'))
+
+    #if red_mask[119][159] == 255:
+    #    shape = shape_recog(red_mask)
+
+    #elif yellow_orange_mask[119][159] == 255:
+    #    shape = shape_recog(yellow_orange_mask)
+
+    #elif brown_mask[119][159] == 255:
+    #    shape = shape_recog(brown_mask)
+
+    #else:
+    #    shape = 'undefined'
+    #    color = 'undefined'
+
+    #if shape == 'red':
+    #    print ('red circle detected')
+    #if shape == 'brown':
+    #    culture = "greshiha"
+    #if shape == 'yellow_orange':
+    #    culture = "pshenitsa"
+
+    
+# read about:
+#   - hsv
+#   - cv masks (red, yellow, brown, etc.)
+#   - cv moments: https://docs.opencv.org/4.x/dd/d49/tutorial_py_contour_features.html
+#   - fire_debug: http://127.0.0.1/clover/topics.html
+#   - home/clover/examples/red_circle.py
+#   - http://127.0.0.1/clover/docs/ru/innopolis_open_L22_AERO.html
 
 image_sub = rospy.Subscriber('main_camera/image_raw_throttled', Image, image_callback, queue_size=1)
 
