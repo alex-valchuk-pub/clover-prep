@@ -1913,10 +1913,10 @@
       <pose>2.72062 4.48842 0 0 -0 0</pose>
     </model>
     <state world_name='default'>
-      <sim_time>920 728000000</sim_time>
-      <real_time>160 999619549</real_time>
-      <wall_time>1723167204 722794913</wall_time>
-      <iterations>33811</iterations>
+      <sim_time>1249 232000000</sim_time>
+      <real_time>131 612564479</real_time>
+      <wall_time>1723170025 377202547</wall_time>
+      <iterations>29405</iterations>
       <model name='aruco_2_100'>
         <pose>0 0 0 0 -0 0</pose>
         <scale>1 1 1</scale>
@@ -1938,20 +1938,20 @@
         </link>
       </model>
       <model name='aruco_cherries'>
-        <pose>1.5745 0.458755 0.597197 0 -0 0</pose>
+        <pose>1.51232 0.458755 0.0554 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='marker_101_link'>
-          <pose>1.5745 0.458755 0.598197 0 -0 1.5708</pose>
+          <pose>1.51232 0.458755 0.0564 0 -0 1.5708</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='aruco_potatoes'>
-        <pose>4.02041 3.51623 1.04584 0 -0 0</pose>
+        <pose>3.46859 3.51623 0.506838 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='marker_101_link'>
-          <pose>4.02041 3.51623 1.04683 0 -0 1.5708</pose>
+          <pose>3.46859 3.51623 0.507838 0 -0 1.5708</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
@@ -2038,23 +2038,23 @@
         </link>
       </model>
       <model name='red_box'>
-        <pose>1.56407 0.480523 0.374884 -1.4e-05 -1e-06 -0.000171</pose>
-        <scale>0.371433 0.293986 0.417794</scale>
+        <pose>1.518 0.480526 0.024685 -1.4e-05 -1e-06 -0.000171</pose>
+        <scale>0.326938 0.257097 0.049671</scale>
         <link name='link'>
-          <pose>1.56407 0.480523 0.374884 -1.4e-05 -1e-06 -0.000171</pose>
+          <pose>1.518 0.480526 0.024685 -1.4e-05 -1e-06 -0.000171</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='unit_box'>
-        <pose>4.00552 3.52636 0.521365 1.1e-05 -5.2e-05 0.008916</pose>
-        <scale>0.388379 0.344852 1.04275</scale>
+        <pose>3.4849 3.51843 0.252232 0 1e-06 0.017652</pose>
+        <scale>0.388379 0.344852 0.504464</scale>
         <link name='link'>
-          <pose>4.00552 3.52636 0.521365 1.1e-05 -5.2e-05 0.008916</pose>
+          <pose>3.4849 3.51843 0.252232 0 1e-06 0.017652</pose>
           <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>-1.71024 1.50083 -2.45693 0.311019 0.139022 -3.13034</acceleration>
-          <wrench>-1.71024 1.50083 -2.45693 0 -0 0</wrench>
+          <acceleration>0.020226 0.010904 -2.4857 -0.043486 0.079902 -1.5e-05</acceleration>
+          <wrench>0.020226 0.010904 -2.4857 0 -0 0</wrench>
         </link>
       </model>
       <light name='sun'>
@@ -2267,7 +2267,7 @@
     </model>
     <gui fullscreen='0'>
       <camera name='user_camera'>
-        <pose>7.58991 -4.23203 5.2498 0 0.654783 2.17729</pose>
+        <pose>7.93587 -3.97535 4.57005 -0 0.594783 2.32129</pose>
         <view_controller>orbit</view_controller>
         <projection_type>perspective</projection_type>
       </camera>
@@ -2320,7 +2320,7 @@
           <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
-              <size>7.24836 11.5703 10.2811</size>
+              <size>7.24835 11.5703 10.2811</size>
             </box>
           </geometry>
           <surface>
