@@ -38,11 +38,17 @@ image_pub = rospy.Publisher('~fire_debug', Image, queue_size=1)
 # ACTUAL
 # CHERRIES  APPLES
 # WATER     POTATOES
-proper_locations = {
+goods_to_zones = {
     "WATER": "00",
     "APPLES": "01",
-    "CHERRIE": "10",
-    "POTATOS": "11"
+    "CHERRIES": "10",
+    "POTATOES": "11"
+}
+zones_to_goods = {
+    "00": "WATER",
+    "01": "APPLES",
+    "10": "CHERRIES",
+    "11": "POTATOES"
 }
 
 telem = get_telemetry()
@@ -56,25 +62,34 @@ def range_callback(msg):
 
 rospy.Subscriber('rangefinder/range', Range, range_callback)
 
-def get_current_zone():
-    telem = get_telemetry(frame_id='aruco_map')
-    if telem.x <= 2:
+def get_code_zone(xc, yc):
+    zone_x = -1
+    zone_y = -1
+    
+    if xc <= 89:
         zone_x = 0
-    elif telem.x <= 5:
+    elif xc <= 200:
         zone_x = 1
 
-    if telem.y <= 2:
+    if yc <= 100:
         zone_y = 0
-    elif telem.y <= 5:
+    elif yc <= 200:
         zone_y = 1
 
-    return "{}{}".format(zone_x, zone_y)
+    zone_code = "{}{}".format(zone_x, zone_y)
+          
+    if zone_code in zones_to_goods:
+        return zones_to_goods[zone_code]
+    
+    return None
 
 @long_callback
 def image_callback(msg):
     img = bridge.imgmsg_to_cv2(msg, 'bgr8')
     barcodes = pyzbar.decode(img, [ZBarSymbol.QRCODE])
     
+    image_pub.publish(bridge.cv2_to_imgmsg(img, 'bgr8'))
+
     for barcode in barcodes:
         b_data = barcode.data.decode('utf-8')
         #b_type = barcode.type
@@ -83,22 +98,25 @@ def image_callback(msg):
         yc = y + h/2
 
         # we are not interested in other barcodes atm.
-        if b_data not in proper_locations:
+        if b_data not in goods_to_zones:
+            print(Fore.WHITE + 'Found not interesting {} QRcode'.format(b_data))
             continue
 
-        actual_zone = get_current_zone()
-        expected_zone = proper_locations[b_data]
-
-        if actual_zone == expected_zone:
+        current_zone = get_code_zone(xc, yc)
+        actual_zone = b_data
+        
+        if actual_zone == current_zone:
             msg_color = Fore.GREEN
-            msg_state = "correct"
+            rect_color = (0, 255, 0)
+            object_state = "correct"
         else:
             msg_color = Fore.RED
-            msg_state = "incorrect"
+            rect_color = (0, 0, 255)
+            object_state = "incorrect"
 
-        cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 3)
+        cv2.rectangle(img, (x, y), (x + w, y + h), rect_color, 3)
         image_pub.publish(bridge.cv2_to_imgmsg(img, 'bgr8'))
-        print('Found '{}' with center at x={}, y={}'.format(b_data, xc, yc))
+        print(msg_color + 'Found {} located at x={}, y={} in a zone for {}: {}'.format(b_data, xc, yc, actual_zone, object_state) + Fore.WHITE)
 
 image_sub = rospy.Subscriber('main_camera/image_raw_throttled', Image, image_callback, queue_size=1)
 
