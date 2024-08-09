@@ -3,7 +3,6 @@
 import math
 import rospy
 import cv2
-from clover import srv
 from std_srvs.srv import Trigger
 from sensor_msgs.msg import Range
 from colorama import Fore
@@ -12,7 +11,10 @@ from pyzbar import pyzbar
 from pyzbar.pyzbar import ZBarSymbol
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
+
+from clover import srv
 from clover import long_callback
+from clover.srv import SetLEDEffect
 
 rospy.init_node('flight')
 bridge = CvBridge()
@@ -20,6 +22,7 @@ bridge = CvBridge()
 get_telemetry = rospy.ServiceProxy('get_telemetry', srv.GetTelemetry)
 navigate = rospy.ServiceProxy('navigate', srv.Navigate)
 land = rospy.ServiceProxy('land', Trigger)
+set_effect = rospy.ServiceProxy('led/set_effect', SetLEDEffect)
 image_pub = rospy.Publisher('~fire_debug', Image, queue_size=1)
     
 # read about:
@@ -66,14 +69,14 @@ def get_code_zone(xc, yc):
     zone_x = -1
     zone_y = -1
     
-    if xc <= 89:
+    if xc <= 2.5:
         zone_x = 0
-    elif xc <= 200:
+    elif xc <= 5:
         zone_x = 1
 
-    if yc <= 100:
+    if yc <= 2.5:
         zone_y = 0
-    elif yc <= 200:
+    elif yc <= 5.5:
         zone_y = 1
 
     zone_code = "{}{}".format(zone_x, zone_y)
@@ -102,24 +105,28 @@ def image_callback(msg):
             print(Fore.WHITE + 'Found not interesting {} QRcode'.format(b_data))
             continue
 
-        current_zone = get_code_zone(xc, yc)
+        telem = get_telemetry('aruco_map')
+        current_zone = get_code_zone(telem.x, telem.y)
         actual_zone = b_data
         
         if actual_zone == current_zone:
             msg_color = Fore.GREEN
             rect_color = (0, 255, 0)
             object_state = "correct"
+            set_effect(r=255, g=255, b=0)  # fill strip with red color
         else:
             msg_color = Fore.RED
             rect_color = (0, 0, 255)
             object_state = "incorrect"
+            set_effect(r=255, g=0, b=0)  # fill strip with red color
 
         cv2.rectangle(img, (x, y), (x + w, y + h), rect_color, 3)
         image_pub.publish(bridge.cv2_to_imgmsg(img, 'bgr8'))
-        print(msg_color + 'Found {} located at x={}, y={} in a zone for {}: {}'.format(b_data, xc, yc, actual_zone, object_state) + Fore.WHITE)
+        print(msg_color + 'Found {} in a zone for {}: {}'.format(b_data, current_zone, object_state) + Fore.WHITE)
+
+    rospy.sleep(1)
 
 image_sub = rospy.Subscriber('main_camera/image_raw_throttled', Image, image_callback, queue_size=1)
-
 
 print('Take off and hover 1 m above the ground')
 navigate(x=0, y=0, z=1, frame_id='body', auto_arm=True)
