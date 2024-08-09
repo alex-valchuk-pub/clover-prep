@@ -1913,15 +1913,55 @@
       <pose>2.72062 4.48842 0 0 -0 0</pose>
     </model>
     <state world_name='default'>
-      <sim_time>668 592000000</sim_time>
-      <real_time>88 242273334</real_time>
-      <wall_time>1723136340 476830433</wall_time>
-      <iterations>14557</iterations>
+      <sim_time>920 728000000</sim_time>
+      <real_time>160 999619549</real_time>
+      <wall_time>1723167204 722794913</wall_time>
+      <iterations>33811</iterations>
       <model name='aruco_2_100'>
         <pose>0 0 0 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='aruco_2_100_link'>
           <pose>0 0 0 0 -0 0</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='aruco_apples'>
+        <pose>1.4238 3.65951 0.124868 0 -0 0</pose>
+        <scale>1 1 1</scale>
+        <link name='marker_apples'>
+          <pose>1.4238 3.65951 0.125868 0 -0 1.5708</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='aruco_cherries'>
+        <pose>1.5745 0.458755 0.597197 0 -0 0</pose>
+        <scale>1 1 1</scale>
+        <link name='marker_101_link'>
+          <pose>1.5745 0.458755 0.598197 0 -0 1.5708</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='aruco_potatoes'>
+        <pose>4.02041 3.51623 1.04584 0 -0 0</pose>
+        <scale>1 1 1</scale>
+        <link name='marker_101_link'>
+          <pose>4.02041 3.51623 1.04683 0 -0 1.5708</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='aruco_water'>
+        <pose>4.49318 1.49358 0.41497 0 -0 0</pose>
+        <scale>1 1 1</scale>
+        <link name='marker_water'>
+          <pose>4.49318 1.49358 0.41597 0 -0 1.5708</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
@@ -2008,13 +2048,13 @@
         </link>
       </model>
       <model name='unit_box'>
-        <pose>4.00522 3.52608 0.521387 1.2e-05 5.7e-05 0.001177</pose>
+        <pose>4.00552 3.52636 0.521365 1.1e-05 -5.2e-05 0.008916</pose>
         <scale>0.388379 0.344852 1.04275</scale>
         <link name='link'>
-          <pose>4.00522 3.52608 0.521387 1.2e-05 5.7e-05 0.001177</pose>
+          <pose>4.00552 3.52636 0.521365 1.1e-05 -5.2e-05 0.008916</pose>
           <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>-2.99993 0.720596 3.12564 -1.6048 0.598185 -0.012941</acceleration>
-          <wrench>-2.99993 0.720596 3.12564 0 -0 0</wrench>
+          <acceleration>-1.71024 1.50083 -2.45693 0.311019 0.139022 -3.13034</acceleration>
+          <wrench>-1.71024 1.50083 -2.45693 0 -0 0</wrench>
         </link>
       </model>
       <light name='sun'>
@@ -2227,7 +2267,7 @@
     </model>
     <gui fullscreen='0'>
       <camera name='user_camera'>
-        <pose>9.11183 -7.73737 4.08323 0 0.41196 2.16169</pose>
+        <pose>7.58991 -4.23203 5.2498 0 0.654783 2.17729</pose>
         <view_controller>orbit</view_controller>
         <projection_type>perspective</projection_type>
       </camera>
@@ -2591,6 +2631,106 @@
         <kinematic>0</kinematic>
         <static>1</static>
       </link>
+    </model>
+    <model name='aruco_cherries'>
+      <static>1</static>
+      <link name='marker_101_link'>
+        <pose>0 0 0.001 0 -0 1.5708</pose>
+        <visual name='visual_marker_cherries'>
+          <cast_shadows>0</cast_shadows>
+          <geometry>
+            <box>
+              <size>0.44 0.44 0.001</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <uri>model://aruco_cherries/materials/scripts</uri>
+              <uri>model://aruco_cherries/materials/textures</uri>
+              <name>aruco/marker_cherries</name>
+            </script>
+          </material>
+        </visual>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <pose>1.28555 0.733272 0 0 -0 0</pose>
+    </model>
+    <model name='aruco_apples'>
+      <static>1</static>
+      <link name='marker_apples'>
+        <pose>0 0 0.001 0 -0 1.5708</pose>
+        <visual name='visual_apples'>
+          <cast_shadows>0</cast_shadows>
+          <geometry>
+            <box>
+              <size>0.44 0.44 0.001</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <uri>model://aruco_apples/materials/scripts</uri>
+              <uri>model://aruco_apples/materials/textures</uri>
+              <name>aruco/marker_apples</name>
+            </script>
+          </material>
+        </visual>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <pose>1.4238 3.65951 0 0 -0 0</pose>
+    </model>
+    <model name='aruco_potatoes'>
+      <static>1</static>
+      <link name='marker_101_link'>
+        <pose>0 0 0.001 0 -0 1.5708</pose>
+        <visual name='visual_marker_potatoes'>
+          <cast_shadows>0</cast_shadows>
+          <geometry>
+            <box>
+              <size>0.44 0.44 0.001</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <uri>model://aruco_potatoes/materials/scripts</uri>
+              <uri>model://aruco_potatoes/materials/textures</uri>
+              <name>aruco/marker_potatoes</name>
+            </script>
+          </material>
+        </visual>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <pose>4.02041 3.51623 0 0 -0 0</pose>
+    </model>
+    <model name='aruco_water'>
+      <static>1</static>
+      <link name='marker_water'>
+        <pose>0 0 0.001 0 -0 1.5708</pose>
+        <visual name='visual_water'>
+          <cast_shadows>0</cast_shadows>
+          <geometry>
+            <box>
+              <size>0.44 0.44 0.001</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <uri>model://aruco_water/materials/scripts</uri>
+              <uri>model://aruco_water/materials/textures</uri>
+              <name>aruco/marker_water</name>
+            </script>
+          </material>
+        </visual>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <pose>4.49318 1.41109 0 0 -0 0</pose>
     </model>
   </world>
 </sdf>
