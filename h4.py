@@ -54,10 +54,16 @@ zones_to_goods = {
     "11": "POTATOES"
 }
 
+goods_heights = {
+    "WATER": 0,
+    "APPLES": 0,
+    "CHERRIES": 0,
+    "POTATOES": 0
+}
+
 telem = get_telemetry()
 print('Battery: {}'.format(telem.voltage))
 print('Connected: {}'.format(telem.connected))
-
 
 def range_callback(msg):
     global h
@@ -119,6 +125,9 @@ def image_callback(msg):
             rect_color = (0, 0, 255)
             object_state = "incorrect"
             set_effect(r=255, g=0, b=0)  # fill strip with red color
+        
+        global current_good
+        current_good = b_data
 
         cv2.rectangle(img, (x, y), (x + w, y + h), rect_color, 3)
         image_pub.publish(bridge.cv2_to_imgmsg(img, 'bgr8'))
@@ -127,6 +136,29 @@ def image_callback(msg):
     rospy.sleep(1)
 
 image_sub = rospy.Subscriber('main_camera/image_raw_throttled', Image, image_callback, queue_size=1)
+
+def record_height():
+    if current_good not in goods_heights:
+        return
+    
+    goods_heights[current_good] = h
+
+def record_report():
+    my_file = open("D_report_fly.txt", "w+")
+    highest_good = ""
+    highest = 0
+    i = 0
+    for key in goods_heights:
+        height = goods_heights[key]
+        my_file.write('object {}: {}, height = {}\n'.format(i, key, height))
+
+        i += 1
+        if height > highest:
+            highest = height
+            highest_good = key
+
+    my_file.write('The heighest object is {}'.format(highest_good))
+    my_file.close()
 
 print('Take off and hover 1 m above the ground')
 navigate(x=0, y=0, z=1, frame_id='body', auto_arm=True)
@@ -137,11 +169,16 @@ rospy.sleep(5)
 while True:
     try:
         print('Please, enter X,Y,Z coordinates.')
-        print('or R for current range')
+        print('or H for current height')
+        print('or R for current report')
         print('or Q for exit')
         str = input()
+        if str == 'H':
+            record_height()
+            continue
+
         if str == 'R':
-            print('Rangefinder distance: {}'.format(h))
+            record_report()
             continue
 
         if str == 'Q':
@@ -152,8 +189,8 @@ while True:
             print('You have made a wrong input. Please try again')
             continue
 
-        x = int(parts[0])
-        y = int(parts[1])
+        x = float(parts[0])
+        y = float(parts[1])
         z = int(parts[2])
 
         print('I am going to point (X:{},Y:{},Z:{})'.format(x, y, z))
