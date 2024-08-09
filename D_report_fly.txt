@@ -1,0 +1,5 @@
+object 0: WATER, height = 0.3116513192653656
+object 1: APPLES, height = 0.5509880930185318
+object 2: CHERRIES, height = 0.27871787548065186
+object 3: POTATOES, height = 0.5140760242938995
+The heighest object is APPLES

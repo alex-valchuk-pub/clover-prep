@@ -69,7 +69,7 @@ def range_callback(msg):
     global h
     h = msg.range
 
-rospy.Subscriber('rangefinder/range', Range, range_callback)
+rospy.Subscriber('rangefinder/range', Range, range_callback, queue_size=1)
 
 def get_code_zone(xc, yc):
     zone_x = -1
@@ -141,7 +141,12 @@ def record_height():
     if current_good not in goods_heights:
         return
     
-    goods_heights[current_good] = h
+    range = rospy.wait_for_message('rangefinder/range', Range).range
+    telem = get_telemetry(frame_id='map')
+    goods_heights[current_good] = telem.z - range
+    print('{}{}'.format(current_good, goods_heights[current_good]))
+    print('Z = {}'.format(telem.z))
+    print('H = {}'.format(h))
 
 def record_report():
     my_file = open("D_report_fly.txt", "w+")
@@ -191,7 +196,7 @@ while True:
 
         x = float(parts[0])
         y = float(parts[1])
-        z = int(parts[2])
+        z = float(parts[2])
 
         print('I am going to point (X:{},Y:{},Z:{})'.format(x, y, z))
 
