@@ -6,6 +6,7 @@ import cv2
 from clover import srv
 from std_srvs.srv import Trigger
 from sensor_msgs.msg import Range
+from colorama import Fore
 
 from pyzbar import pyzbar
 from pyzbar.pyzbar import ZBarSymbol
@@ -20,9 +21,29 @@ get_telemetry = rospy.ServiceProxy('get_telemetry', srv.GetTelemetry)
 navigate = rospy.ServiceProxy('navigate', srv.Navigate)
 land = rospy.ServiceProxy('land', Trigger)
 image_pub = rospy.Publisher('~fire_debug', Image, queue_size=1)
+    
+# read about:
+#   - hsv
+#   - cv masks (red, yellow, brown, etc.)
+#   - cv moments: https://docs.opencv.org/4.x/dd/d49/tutorial_py_contour_features.html
+#   - fire_debug: http://127.0.0.1/clover/topics.html
+#   - home/clover/examples/red_circle.py
+#   - http://127.0.0.1/clover/docs/ru/innopolis_open_L22_AERO.html
+#   - S
 
-# APPLES    GREEN   CORRECT
+# EXPECTED
+# WATER     APPLES
+# CHERRIES  POTATOES
 
+# ACTUAL
+# CHERRIES  APPLES
+# WATER     POTATOES
+proper_locations = {
+    "WATER": "00",
+    "APPLES": "01",
+    "CHERRIE": "10",
+    "POTATOS": "11"
+}
 
 telem = get_telemetry()
 print('Battery: {}'.format(telem.voltage))
@@ -35,58 +56,49 @@ def range_callback(msg):
 
 rospy.Subscriber('rangefinder/range', Range, range_callback)
 
+def get_current_zone():
+    telem = get_telemetry(frame_id='aruco_map')
+    if telem.x <= 2:
+        zone_x = 0
+    elif telem.x <= 5:
+        zone_x = 1
+
+    if telem.y <= 2:
+        zone_y = 0
+    elif telem.y <= 5:
+        zone_y = 1
+
+    return "{}{}".format(zone_x, zone_y)
+
 @long_callback
 def image_callback(msg):
     img = bridge.imgmsg_to_cv2(msg, 'bgr8')
-    img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV) [20:200,20:300]
-
-    red_low1 = (0, 110, 150)
-    red_high1 = (7, 255, 255)
+    barcodes = pyzbar.decode(img, [ZBarSymbol.QRCODE])
     
-    yellow_orange_low = (38, 110, 150)
-    yellow_orange_high= (52, 110, 150)
+    for barcode in barcodes:
+        b_data = barcode.data.decode('utf-8')
+        #b_type = barcode.type
+        (x, y, w, h) = barcode.rect
+        xc = x + w/2
+        yc = y + h/2
 
-    #гречиха
-    brown_low = (23, 50, 50)
-    brown_high= (37, 50, 50)
+        # we are not interested in other barcodes atm.
+        if b_data not in proper_locations:
+            continue
 
-    red_mask = cv2.inRange(img_hsv, red_low1, red_high1)
-    yellow_orange_mask = cv2.inRange(img_hsv, yellow_orange_low, yellow_orange_high)
-    brown_mask = cv2.inRange(img_hsv, brown_low, brown_high)
+        actual_zone = get_current_zone()
+        expected_zone = proper_locations[b_data]
 
-    red_contours, red_hierarchy = cv2.findContours(red_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        if actual_zone == expected_zone:
+            msg_color = Fore.GREEN
+            msg_state = "correct"
+        else:
+            msg_color = Fore.RED
+            msg_state = "incorrect"
 
-    image_pub.publish(bridge.cv2_to_imgmsg(img, 'bgr8'))
-
-    #if red_mask[119][159] == 255:
-    #    shape = shape_recog(red_mask)
-
-    #elif yellow_orange_mask[119][159] == 255:
-    #    shape = shape_recog(yellow_orange_mask)
-
-    #elif brown_mask[119][159] == 255:
-    #    shape = shape_recog(brown_mask)
-
-    #else:
-    #    shape = 'undefined'
-    #    color = 'undefined'
-
-    #if shape == 'red':
-    #    print ('red circle detected')
-    #if shape == 'brown':
-    #    culture = "greshiha"
-    #if shape == 'yellow_orange':
-    #    culture = "pshenitsa"
-
-    
-# read about:
-#   - hsv
-#   - cv masks (red, yellow, brown, etc.)
-#   - cv moments: https://docs.opencv.org/4.x/dd/d49/tutorial_py_contour_features.html
-#   - fire_debug: http://127.0.0.1/clover/topics.html
-#   - home/clover/examples/red_circle.py
-#   - http://127.0.0.1/clover/docs/ru/innopolis_open_L22_AERO.html
-#   - S
+        cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 3)
+        image_pub.publish(bridge.cv2_to_imgmsg(img, 'bgr8'))
+        print('Found '{}' with center at x={}, y={}'.format(b_data, xc, yc))
 
 image_sub = rospy.Subscriber('main_camera/image_raw_throttled', Image, image_callback, queue_size=1)
 
