@@ -1,0 +1,15 @@
+material aruco/marker_apples
+{
+    technique
+    {
+        pass
+        {
+            texture_unit
+            {
+                texture APPLES.png
+                filtering none
+                scale 1.0 1.0
+            }
+        }
+    }
+}
